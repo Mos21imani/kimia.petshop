@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hand Therapy App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#4682b4">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(() => console.log("Service Worker Registered"))
+                .catch(err => console.error("Service Worker Registration Failed:", err));
+        }
+
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', function (e) {
+            e.preventDefault();
+        }, { passive: false });
+    </script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            overscroll-behavior: contain;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            background-color: #4682b4;
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .section-card:active {
+            transform: scale(0.98);
+        }
+
+        .section-title {
+            color: #4682b4;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .content-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .content-list li {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            touch-action: manipulation;
+        }
+
+        .content-list li:active {
+            background-color: #f0f0f0;
+        }
+
+        .progress-bar {
+            background: #eee;
+            height: 16px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .progress {
+            background: #4682b4;
+            height: 100%;
+            border-radius: 8px;
+            width: 60%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+
+            header {
+                padding: 12px;
+            }
+
+            .section-card {
+                padding: 12px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Hand Therapy Assistant</h1>
+            <p>Your personal guide to hand rehabilitation</p>
+        </header>
+
+        <div class="section-card">
+            <h2 class="section-title">📚 Tutorials</h2>
+            <ul class="content-list">
+                <li>Basic Hand Exercises</li>
+                <li>Strength Building Techniques</li>
+                <li>Flexibility Routines</li>
+                <li>Pain Management Tips</li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">📋 Treatment Plan</h2>
+            <ul class="content-list">
+                <li>Daily Exercise Schedule</li>
+                <li>Progress Tracking</li>
+                <li>Goal Setting</li>
+                <li>Exercise Reminders</li>
+            </ul>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <h2 class="section-title">🎯 Journey</h2>
+            <ul class="content-list">
+                <li>Progress Photos</li>
+                <li>Achievement Milestones</li>
+                <li>Recovery Timeline</li>
+                <li>Personal Notes</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let touchStartTime;
+        const cards = document.querySelectorAll('.section-card');
+
+        cards.forEach(card => {
+            card.addEventListener('touchstart', () => {
+                touchStartTime = Date.now();
+                card.style.backgroundColor = '#f8f9fa';
+            });
+
+            card.addEventListener('touchend', () => {
+                const touchDuration = Date.now() - touchStartTime;
+                if (touchDuration < 500) {
+                    setTimeout(() => {
+                        card.style.backgroundColor = 'white';
+                    }, 200);
+                }
+            });
+        });
+
+        // Handle offline functionality
+        window.addEventListener('online', function () {
+            console.log('App is online');
+        });
+
+        window.addEventListener('offline', function () {
+            console.log('App is offline');
+        });
+    </script>
+</body>
+
+</html>
+{
+"name": "Hand Therapy App",
+"short_name": "HandTherapy",
+"start_url": "/index.html",
+"display": "standalone",
+"orientation": "portrait",
+"background_color": "#f0f8ff",
+"theme_color": "#4682b4",
+"icons": [
+{
+"src": "icon-192.png",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any maskable"
+},
+{
+"src": "icon-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any maskable"
+}
+],
+"prefer_related_applications": true,
+"related_applications": [
+{
+"platform": "play",
+"id": "com.handtherapy.app"
+}
+]
+}
+
+self.addEventListener('install', event => {
+event.waitUntil(
+caches.open('hand-therapy-cache-v1').then(cache => {
+return cache.addAll([
+'/',
+'/index.html',
+'/manifest.json',
+'/icon-192.png',
+'/icon-512.png'
+]);
+})
+);
+});
+
+self.addEventListener('fetch', event => {
+event.respondWith(
+caches.match(event.request)
+.then(response => {
+return response || fetch(event.request)
+.then(fetchResponse => {
+return caches.open('hand-therapy-cache-v1')
+.then(cache => {
+cache.put(event.request, fetchResponse.clone());
+return fetchResponse;
+});
+});
+})
+.catch(() => {
+return caches.match('/offline.html');
+})
+);
+});
+
+self.addEventListener('activate', event => {
+event.waitUntil(
+caches.keys().then(cacheNames => {
+return Promise.all(
+cacheNames
+.filter(cacheName => cacheName.startsWith('hand-therapy-cache-'))
+.filter(cacheName => cacheName !== 'hand-therapy-cache-v1')
+.map(cacheName => caches.delete(cacheName))
+);
+})
+);
+});
